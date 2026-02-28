@@ -45,28 +45,41 @@ void VehicleData::simulateData()
     // Simulate Acceleration
     int nextSpeed = m_speed + 1;
     if (nextSpeed > 160) {
-        nextSpeed = 0;
+        nextSpeed = 0; // Reset to 0 when we hit max speed
     }
     setSpeed(nextSpeed);
 
-    // Gear & RPM Logic
-    int nextRpm = m_rpm + 80;
-    QString currentGear = "D1";
+    // Synchronized Gear & RPM Logic
+    int nextRpm = 800; // Default idle RPM
+    QString currentGear = "P";
 
-    if (m_speed == 0) {
+    if (nextSpeed == 0) {
         currentGear = "P";
-        nextRpm = 800; // Idle RPM
-    } else if (m_speed < 40) {
+        nextRpm = 800; // Idle
+    }
+    // GEAR D1 (Speed 1 to 40)
+    else if (nextSpeed <= 40) {
         currentGear = "D1";
-    } else if (m_speed < 80) {
+        // Map speed (1-40) to an RPM range of (1000-6000)
+        nextRpm = 1000 + ((nextSpeed - 0) * 5000 / 40);
+    }
+    // GEAR D2 (Speed 41 to 80)
+    else if (nextSpeed <= 80) {
         currentGear = "D2";
-        if (nextRpm > 6000) nextRpm = 3000; // Simulate gear shift drop
-    } else if (m_speed < 120) {
+        // Map speed (41-80) to an RPM range of (2000-6000)
+        nextRpm = 2000 + ((nextSpeed - 40) * 4000 / 40);
+    }
+    // GEAR D3 (Speed 81 to 120)
+    else if (nextSpeed <= 120) {
         currentGear = "D3";
-        if (nextRpm > 6000) nextRpm = 3500;
-    } else {
+        // Map speed (81-120) to an RPM range of (2500-6000)
+        nextRpm = 2500 + ((nextSpeed - 80) * 3500 / 40);
+    }
+    // GEAR D4 (Speed 121 to 160)
+    else {
         currentGear = "D4";
-        if (nextRpm > 6000) nextRpm = 4000;
+        // Map speed (121-160) to an RPM range of (3000-6000)
+        nextRpm = 3000 + ((nextSpeed - 120) * 3000 / 40);
     }
 
     setRpm(nextRpm);

@@ -19,6 +19,7 @@ qt_add_qml_module(appAutoCluster
         Main.qml
         RESOURCES README.md
         SOURCES vehicledata.h vehicledata.cpp
+        QML_FILES CircularGauge.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
