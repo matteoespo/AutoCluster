@@ -1,7 +1,7 @@
 #include "vehicledata.h"
 
 VehicleData::VehicleData(QObject *parent)
-    : QObject(parent), m_speed(0), m_rpm(800) // Start at 0 km/h and 800 RPM (idle)
+    : QObject(parent), m_speed(0), m_rpm(800), m_gear("P")
 {
     // Create a timer to simulate real-time sensor data
     m_timer = new QTimer(this);
@@ -15,6 +15,7 @@ VehicleData::VehicleData(QObject *parent)
 
 int VehicleData::speed() const { return m_speed; }
 int VehicleData::rpm() const { return m_rpm; }
+QString VehicleData::gear() const { return m_gear; }
 
 void VehicleData::setSpeed(int newSpeed)
 {
@@ -32,19 +33,42 @@ void VehicleData::setRpm(int newRpm)
     emit rpmChanged();
 }
 
+void VehicleData::setGear(const QString &newGear)
+{
+    if (m_gear == newGear) return;
+    m_gear = newGear;
+    emit gearChanged();
+}
+
 void VehicleData::simulateData()
 {
-    // 1. Simulate Acceleration
+    // Simulate Acceleration
     int nextSpeed = m_speed + 1;
     if (nextSpeed > 160) {
-        nextSpeed = 0; // Reset to 0 when we hit 160 km/h
+        nextSpeed = 0;
     }
     setSpeed(nextSpeed);
 
-    // 2. Simulate RPM and Gear Shifting
+    // Gear & RPM Logic
     int nextRpm = m_rpm + 80;
-    if (nextRpm > 6500) {
-        nextRpm = 1500; // Simulate the RPM dropping when the car shifts gears
+    QString currentGear = "D1";
+
+    if (m_speed == 0) {
+        currentGear = "P";
+        nextRpm = 800; // Idle RPM
+    } else if (m_speed < 40) {
+        currentGear = "D1";
+    } else if (m_speed < 80) {
+        currentGear = "D2";
+        if (nextRpm > 6000) nextRpm = 3000; // Simulate gear shift drop
+    } else if (m_speed < 120) {
+        currentGear = "D3";
+        if (nextRpm > 6000) nextRpm = 3500;
+    } else {
+        currentGear = "D4";
+        if (nextRpm > 6000) nextRpm = 4000;
     }
+
     setRpm(nextRpm);
+    setGear(currentGear);
 }
