@@ -2,9 +2,6 @@
 
 A real-time digital instrument cluster simulator built with **C++** and **Qt Quick / QML**. 
 
-## 📸 Preview
-*SOON*
-
 ## Key Features
 * **C++ Backend Simulator:** Generates realistic, real-time telemetry data (Speed, RPM, Gear state).
 * **QML UI Integration:** Uses `QML_ELEMENT` and Qt Property Bindings for instant, zero-lag UI updates.
